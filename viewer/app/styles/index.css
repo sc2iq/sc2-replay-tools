@@ -1,0 +1,17 @@
+.untilizationGrid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    width: 100%;
+}
+
+.row .header {
+    width: 100px;
+}
+
+.even {
+}
