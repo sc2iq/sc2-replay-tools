@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "sc2replayreader"
+version = "0.1.0"
+description = "SC2 Replay Parser"
+authors = ["Matt Mazzola <mattmazzola@live.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sc2reader = "^1.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
