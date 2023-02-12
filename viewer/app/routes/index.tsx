@@ -40,13 +40,12 @@ export default function Index() {
               const totalSeconds = i * timeSlice
               const minutes = Math.floor(totalSeconds / 60)
               const reminaderSeconds = Math.round(((totalSeconds / 60) - minutes) * 60)
-              console.log({ totalSeconds, minutes, reminaderSeconds })
-              return <div>{minutes.toString().padStart(2, '0')}:{reminaderSeconds.toString().padStart(2, '0')}</div>
+
+              return <div>
+                {minutes.toString().padStart(2, '0')}:
+                {reminaderSeconds.toString().padStart(2, '0')}
+              </div>
             })}
-            <div>00:10</div>
-            <div>00:20</div>
-            <div>00:30</div>
-            <div>00:40</div>
           </div>
         </div>
         <div className="row">
@@ -54,9 +53,30 @@ export default function Index() {
           <div className="buildingName">Command Center</div>
           <div className="units">
             <div className="buildingComplete">
-              <Unit name="SCV" />
-              <Unit name="SCV" />
-              <Unit name="SCV" />
+              <Unit
+                name="SCV"
+                startTime={0}
+              />
+              <Unit
+                name="SCV"
+                startTime={12}
+              />
+              <Unit
+                name="SCV"
+                startTime={24}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="time">00:10</div>
+          <div className="buildingName">Supply</div>
+          <div className="units">
+            <div className="buildingComplete">
+              <Unit
+                name="Supply"
+                startTime={15}
+              />
             </div>
           </div>
         </div>

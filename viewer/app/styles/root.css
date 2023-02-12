@@ -26,6 +26,22 @@ code {
     --color-white: rgba(255, 255, 255, 0.986)
 }
 
+::-webkit-scrollbar {
+    /* Track color */
+    background-color: var(--dark-bg);
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    /* Thumb color */
+    background-color: var(--red-highlight);
+    border-radius: 100px;
+}
+
+body {
+    scrollbar-color: var(--red-highlight) var(--dark-bg);
+}
+
 header {
     text-align: center;
 }
