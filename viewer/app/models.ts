@@ -7,7 +7,6 @@ export type BuildOrder = {
 export type Building = {
     name: BuildingName
     startTime: number
-    buildTime: number
     production: ProductionEvent[]
 }
 

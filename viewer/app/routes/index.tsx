@@ -1,5 +1,6 @@
 import { DataFunctionArgs, LinksFunction } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
+import { Building } from "~/components/building"
 import { Unit } from "~/components/unit"
 import { getDisplayTimeFromTotalSeconds } from "~/helpers"
 import { BuildOrder } from "~/models"
@@ -11,17 +12,21 @@ export const loader = async ({ }: DataFunctionArgs) => {
       {
         name: 'Command Center',
         startTime: 0,
-        buildTime: 0,
         production: [
           { name: 'SCV', startTime: 0 },
           { name: 'SCV', startTime: 12 },
           { name: 'SCV', startTime: 24 },
+          { name: 'SCV', startTime: 36 },
+          { name: 'SCV', startTime: 50 },
+          { name: 'SCV', startTime: 62 },
+          { name: 'SCV', startTime: 76 },
+          { name: 'Orbital', startTime: 88 },
+          { name: 'SCV', startTime: 116 },
         ]
       },
       {
         name: 'Supply Depot',
-        startTime: 15,
-        buildTime: 20,
+        startTime: 16,
         production: [
           {
             name: "Supply",
@@ -31,8 +36,41 @@ export const loader = async ({ }: DataFunctionArgs) => {
       },
       {
         name: 'Barracks',
-        startTime: 15,
-        buildTime: 20,
+        startTime: 39,
+        production: [
+          {
+            name: "Reaper",
+            startTime: 86,
+          },
+          {
+            name: "Marine",
+            startTime: 116,
+          }
+        ]
+      },
+      {
+        name: 'Refinery',
+        startTime: 43,
+        production: [
+          {
+            name: "Marine",
+            startTime: 20,
+          }
+        ]
+      },
+      {
+        name: 'Command Center',
+        startTime: 103,
+        production: [
+          {
+            name: "Orbital",
+            startTime: 20,
+          }
+        ]
+      },
+      {
+        name: 'Factory',
+        startTime: 126,
         production: [
           {
             name: "Marine",
@@ -83,21 +121,29 @@ export default function Index() {
             })}
           </div>
         </div>
-        {buildOrder.buildings.map(building => {
+        {buildOrder.buildings.map((building, i) => {
           return (
             <div className="row">
               <div className="time">{getDisplayTimeFromTotalSeconds(building.startTime)}</div>
               <div className="buildingName">{building.name}</div>
               <div className="units">
-                <div className="buildingComplete" style={{ ['--start-time-seconds' as any]: building.buildTime }}>
-                  {building.production.map(unit => {
-                    return (
-                      <Unit
-                        name="SCV"
-                        startTime={unit.startTime}
+                <div className="buildingComplete" style={{ ['--start-time-seconds' as any]: building.startTime }}>
+                  <>
+                    {(i !== 0 && building.name !== "Supply Depot") && (
+                      <Building
+                        name={building.name}
+                        startTime={building.startTime}
                       />
-                    )
-                  })}
+                    )}
+                    {building.production.map(unit => {
+                      return (
+                        <Unit
+                          name={unit.name}
+                          startTime={unit.startTime}
+                        />
+                      )
+                    })}
+                  </>
                 </div>
               </div>
             </div>
