@@ -1,19 +1,43 @@
 import { DataFunctionArgs, LinksFunction } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
 import { Unit } from "~/components/unit"
+import { getDisplayTimeFromTotalSeconds } from "~/helpers"
+import { BuildOrder } from "~/models"
 import indexStyles from "../styles/index.css"
 
-export const loader = async ({}: DataFunctionArgs) => {
-  const buildOrder = {
+export const loader = async ({ }: DataFunctionArgs) => {
+  const buildOrder: BuildOrder = {
     buildings: [
       {
         name: 'Command Center',
-        starTime: 0,
+        startTime: 0,
         buildTime: 0,
         production: [
-          { name: 'SCV', startTime: 0, buildTime: 17 },
-          { name: 'SCV', startTime: 17, buildTime: 17 },
-          { name: 'SCV', startTime: 30, buildTime: 17 },
+          { name: 'SCV', startTime: 0 },
+          { name: 'SCV', startTime: 12 },
+          { name: 'SCV', startTime: 24 },
+        ]
+      },
+      {
+        name: 'Supply Depot',
+        startTime: 15,
+        buildTime: 20,
+        production: [
+          {
+            name: "Supply",
+            startTime: 20,
+          }
+        ]
+      },
+      {
+        name: 'Barracks',
+        startTime: 15,
+        buildTime: 20,
+        production: [
+          {
+            name: "Marine",
+            startTime: 20,
+          }
         ]
       }
     ]
@@ -35,8 +59,18 @@ export default function Index() {
   const timeSlice = 10
 
   return (
-    <div>
-      <h1>Data C (8).SC2Replay</h1>
+    <>
+      <header>
+        <h1>StarCraft 2 Build Order Analysis</h1>
+      </header>
+
+      <div className="uploadForm">
+        <label htmlFor="replayFileInput">Replay File:</label>
+        <input type="file" id="replayFileInput" />
+        <button type="submit">Upload</button>
+      </div>
+
+      <h2 className="replayTitle">Data C (8).SC2Replay</h2>
       <div className="untilizationGrid">
         <div className="row headers">
           <div className="header time">Time</div>
@@ -44,49 +78,32 @@ export default function Index() {
           <div className="times">
             {Array(Math.ceil(maxTime / timeSlice)).fill(0).map((_, i) => {
               const totalSeconds = i * timeSlice
-              const minutes = Math.floor(totalSeconds / 60)
-              const reminaderSeconds = Math.round(((totalSeconds / 60) - minutes) * 60)
 
-              return <div>
-                {minutes.toString().padStart(2, '0')}:
-                {reminaderSeconds.toString().padStart(2, '0')}
-              </div>
+              return <div>{getDisplayTimeFromTotalSeconds(totalSeconds)}</div>
             })}
           </div>
         </div>
-        <div className="row">
-          <div className="time">00:00</div>
-          <div className="buildingName">Command Center</div>
-          <div className="units">
-            <div className="buildingComplete">
-              <Unit
-                name="SCV"
-                startTime={0}
-              />
-              <Unit
-                name="SCV"
-                startTime={12}
-              />
-              <Unit
-                name="SCV"
-                startTime={24}
-              />
+        {buildOrder.buildings.map(building => {
+          return (
+            <div className="row">
+              <div className="time">{getDisplayTimeFromTotalSeconds(building.startTime)}</div>
+              <div className="buildingName">{building.name}</div>
+              <div className="units">
+                <div className="buildingComplete" style={{ ['--start-time-seconds' as any]: building.buildTime }}>
+                  {building.production.map(unit => {
+                    return (
+                      <Unit
+                        name="SCV"
+                        startTime={unit.startTime}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="time">00:10</div>
-          <div className="buildingName">Supply</div>
-          <div className="units">
-            <div className="buildingComplete">
-              <Unit
-                name="Supply"
-                startTime={15}
-              />
-            </div>
-          </div>
-        </div>
+          )
+        })}
       </div>
-    </div >
+    </>
   )
 }

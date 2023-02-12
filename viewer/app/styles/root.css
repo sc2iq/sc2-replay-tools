@@ -10,8 +10,8 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 22px;
-    background-color: var(--dark-bg);
-    color: var(--red-highlight);
+    background-color: var(--color-blue-0);
+    color: var(--color-blue-text);
 }
 
 code {
@@ -19,27 +19,33 @@ code {
 }
 
 :root {
-    --red-highlight: hsl(355, 100%, 64%);
-    --red-highlight-disabled: hsla(355, 39%, 45%, 0.664);
-    --dark-bg: rgb(15, 25, 35);
-    --color-white-soft: rgba(255, 255, 255, 0.774);
-    --color-white: rgba(255, 255, 255, 0.986)
+    --color-blue-3: hsl(197deg 100% 93%);
+    --color-blue-2: hsl(192deg 63% 72%);
+    --color-blue-text: hsla(192deg 63% 72% / 1.0);
+    --color-blue-0: hsla(212deg 40% 9% / 1.0);
+    --color-blue-unit-bg: hsla(206deg 81% 25% / 1.0);
+    --color-blue-unit-text: hsla(197deg 100% 93% / 1.0);
+    --color-blue-unit-stroke: hsla(180deg 100% 84% / 1.0);
+    --color-blue-unitrow-building2: hsla(204deg 85% 30% / 1.0);
+    --color-blue-unitrow-building: hsla(204deg 85% 19% / 1.0);
+    --color-white-soft: hsla(0 0% 100% / 0.774);
+    --color-white: hsla(0 0% 100% / 0.986);
 }
 
 ::-webkit-scrollbar {
     /* Track color */
-    background-color: var(--dark-bg);
+    background-color: var(--color-blue-0);
     height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
     /* Thumb color */
-    background-color: var(--red-highlight);
+    background-color: var(--color-blue-2);
     border-radius: 100px;
 }
 
 body {
-    scrollbar-color: var(--red-highlight) var(--dark-bg);
+    scrollbar-color: var(--color-blue-2) var(--color-blue-0);
 }
 
 header {

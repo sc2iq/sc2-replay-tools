@@ -1,8 +1,8 @@
 import { CSSProperties } from "react"
-import { unitNameToBuildTime, Units } from "~/constants"
+import { unitNameToBuildTime, UnitName } from "~/constants"
 
 type Props = {
-    name: Units
+    name: UnitName
     startTime: number
 }
 
