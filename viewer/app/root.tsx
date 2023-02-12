@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import resetStyles from "./styles/reset.css"
 import rootStyles from "./styles/root.css"
 
 export const meta: MetaFunction = () => ({
@@ -18,6 +19,7 @@ export const meta: MetaFunction = () => ({
 export const links: LinksFunction = () => [
   { rel: 'manifest', href: 'manifest.json' },
   { rel: 'apple-touch-icon', href: 'logo.jpg' },
+  { rel: 'stylesheet', href: resetStyles },
   { rel: 'stylesheet', href: rootStyles },
 ]
 
