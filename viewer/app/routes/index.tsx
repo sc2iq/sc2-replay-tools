@@ -1,9 +1,10 @@
-import { LinksFunction, LoaderFunction } from "@remix-run/node"
+import { DataFunctionArgs, LinksFunction } from "@remix-run/node"
+import { useLoaderData } from "@remix-run/react"
 import { Unit } from "~/components/unit"
 import indexStyles from "../styles/index.css"
 
-export const loader: LoaderFunction = async () => {
-  return {
+export const loader = async ({}: DataFunctionArgs) => {
+  const buildOrder = {
     buildings: [
       {
         name: 'Command Center',
@@ -17,6 +18,10 @@ export const loader: LoaderFunction = async () => {
       }
     ]
   }
+
+  return {
+    buildOrder
+  }
 }
 
 export const links: LinksFunction = () => [
@@ -24,6 +29,7 @@ export const links: LinksFunction = () => [
 ]
 
 export default function Index() {
+  const { buildOrder } = useLoaderData<typeof loader>()
 
   const maxTime = 200
   const timeSlice = 10
