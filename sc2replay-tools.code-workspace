@@ -1,17 +1,13 @@
 {
-    "folders": [
-      {
-        "path": "reader"
-      },
-      {
-        "path": "resources"
-      },
-      {
-        "path": "viewer"
-      },
-      {
-        "path": "../../shared-resources"
-      }
-    ],
-    "settings": {}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../../shared-resources"
+    },
+  ],
+  "settings": {
+    "dotenv.enableAutocloaking": false
   }
+}
