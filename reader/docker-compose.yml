@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  processor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
