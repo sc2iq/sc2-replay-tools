@@ -47,6 +47,11 @@ code {
 
 body {
     scrollbar-color: var(--color-blue-2) var(--color-blue-0);
+    color: var(--color-blue-unit-text);
+}
+
+a {
+    color: inherit;
 }
 
 header {

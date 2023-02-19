@@ -1,10 +1,11 @@
 import { ActionArgs, LinksFunction, LoaderArgs, unstable_composeUploadHandlers, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node"
-import { Form, useLoaderData } from "@remix-run/react"
+import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react"
+import { createRef } from "react"
 import { buildOrder as badBuildOrder } from "~/buildOrders/bad"
 import { buildOrder as combinedBuildOrder } from "~/buildOrders/combined"
 import { buildOrder as goodBuildOrder } from "~/buildOrders/good"
 import { BuildOrderComponent } from "~/components/buildOrder"
-import uploadFileAsBlobToAzure from "~/services/azureblob.server"
+import getBlockBlobClient from "~/services/azureblob.server"
 import indexStyles from "../styles/index.css"
 
 export const loader = async ({ }: LoaderArgs) => {
@@ -20,45 +21,63 @@ export const links: LinksFunction = () => [
 ]
 
 export const action = async ({ request }: ActionArgs) => {
-  const uploadHandler = unstable_composeUploadHandlers(
-    async ({ name, contentType, data, filename }) => {
-      console.log({ name, contentType, data, filename })
-      if (name === "replayFileInput"
-        && typeof filename === 'string'
-        && filename.length > 0) {
-        const blobUrl = uploadFileAsBlobToAzure(filename, data)
 
-        return blobUrl
+  const requestContentType = request.headers.get('content-type')
+  const isFileUpload = requestContentType?.startsWith('multipart/form-data') ?? false
+  if (isFileUpload) {
+    const uploadHandler = unstable_createMemoryUploadHandler()
+    const formData = await unstable_parseMultipartFormData(
+      request,
+      uploadHandler
+    )
+
+    const replayFileEntries = formData.getAll('replayFileInput')
+    for (const replayFileEntry of replayFileEntries) {
+      const replayFile = replayFileEntry as File
+      const blobName = `replay-${Date.now()}`
+      const blobClient = getBlockBlobClient(blobName)
+      console.log(`Uploading ${replayFile.name} as ${blobName} to ${blobClient.containerName}`)
+
+      const uploadedBlobResponse = await blobClient.uploadData(
+        await replayFile.arrayBuffer(),
+        {
+          blobHTTPHeaders: {
+            blobContentType: replayFile.type
+          }
+        })
+
+      console.log({ url: blobClient.url })
+
+      return {
+        blobUrl: blobClient.url
       }
-
-      return undefined
-    },
-    // parse everything else into memory
-    unstable_createMemoryUploadHandler()
-  )
-
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler // <-- we'll look at this deeper next
-  )
-
-  const formDataEntries = Object.fromEntries(formData)
-  console.log({ formDataEntries })
+    }
+  }
 
   return null
 }
 
 export default function Index() {
   const { goodBuildOrder, badBuildOrder, combinedBuildOrder } = useLoaderData<typeof loader>()
+  const actionData = useActionData<typeof action>()
+  const formRef = createRef<HTMLFormElement>()
+
+  if (typeof actionData?.blobUrl === 'string') {
+    formRef.current?.reset()
+    console.log(`Reset form!`)
+  }
 
   return (
     <>
-      <Form method="post" encType="multipart/form-data" className="uploadForm">
+      <Form method="post" encType="multipart/form-data" className="uploadForm" ref={formRef}>
         <label htmlFor="replayFileInput">Replay File:</label>
         <input type="file" id="replayFileInput" name="replayFileInput" accept=".sc2replay" />
         <input type="hidden" name="formName" value="replayFile" />
         <button type="submit">Upload</button>
       </Form>
+      {actionData?.blobUrl && (
+        <div>Uploaded blob to: <a href={actionData.blobUrl}>{actionData?.blobUrl}</a></div>
+      )}
 
       <h2 className="replayTitle">GoodBuildOrder</h2>
       <BuildOrderComponent buildOrder={goodBuildOrder} />
