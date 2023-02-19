@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "args": ["./replays/Data-C (8).SC2Replay"],
-            "console": "integratedTerminal",
+            "console": "internalConsole",
             "justMyCode": true
         }
     ]

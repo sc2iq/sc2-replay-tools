@@ -1,7 +1,7 @@
 import sc2reader
+import json
 import sys
 from sc2reader.events import *
-
 
 class GameEventPlugin():
     # This seems required
@@ -38,7 +38,12 @@ def main():
 
     sc2reader.engine.register_plugin(GameEventPlugin())
 
-    replay = sc2reader.load_replay(replay_file_path, load_map=True, load_level=4)
+    replay = sc2reader.load_replay(
+        replay_file_path,
+        load_map=True,
+        load_level=4)
+    
+    print(replay.filename)
 
 if __name__ == '__main__':
     main()

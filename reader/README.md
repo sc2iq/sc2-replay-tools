@@ -8,9 +8,17 @@ What percentage of the time the building exists, is it producing?
 ## Getting Started
 
 ```powershell
-poetry run python ./src/read.py './replays/Data-C (8).SC2Replay'
+python ./src/read.py './replays/Data-C (8).SC2Replay'
 ```
 
+## Using sc2json
+
+```powershell
+sc2json -i 4 -e utf8 './replays/Data-C (8).SC2Replay'
+```
+```powershell
+```
+  
 ## Resources
 
 - https://github.com/GraylinKim/sc2reader
