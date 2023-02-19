@@ -12,8 +12,8 @@ type Props = {
 export const Unit: React.FC<Props> = props => {
     const buildingCompleteTime = props.building.startTime + buildingNameToBuildTime[props.building.name]
     const buildTime = unitNameToBuildTime[props.name]
-    if (props.startTime <= buildingCompleteTime) {
-        console.error(`You attempted to render unit with start time: ${props.startTime} which occurred before the building start `)
+    if (props.startTime < buildingCompleteTime && props.building.startTime != 0) {
+        console.error(`You attempted to render unit ${props.name} with start time: ${props.startTime} which occurred before the building ${props.building.name} complete ${buildingCompleteTime}`)
     }
 
     const offset = props.startTime - props.building.startTime

@@ -24,15 +24,11 @@ export default function Index() {
 
   return (
     <>
-      <header>
-        <h1>StarCraft 2 Build Order Analysis</h1>
-      </header>
-
-      {/* <div className="uploadForm">
+      <div className="uploadForm">
         <label htmlFor="replayFileInput">Replay File:</label>
-        <input type="file" id="replayFileInput" />
+        <input type="file" id="replayFileInput" name="replayFileInput" />
         <button type="submit">Upload</button>
-      </div> */}
+      </div>
 
       <h2 className="replayTitle">GoodBuildOrder</h2>
       <BuildOrderComponent buildOrder={goodBuildOrder} />

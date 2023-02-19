@@ -1,3 +1,4 @@
+
 .untilizationGrid {
     display: flex;
     flex-direction: column;
@@ -107,4 +108,41 @@
 
 .replayTitle {
     padding: 2rem 0;
+}
+
+.uploadForm {
+    border: 3px solid var(--color-blue-unitrow-building3);
+    border-radius: 12px;
+    padding: 0.5em;
+
+    font-size: 2em;
+
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+
+.uploadForm input::file-selector-button {
+    font: inherit;
+    border-radius: 6px;
+    padding: 0.25em;
+    color: var(--color-blue-unit-text);
+    background: var(--color-blue-unit-bg);
+    border: 1px solid var(--color-blue-unit-stroke);
+    cursor: pointer;
+}
+
+.uploadForm input {
+    font: inherit;
+    flex: 1;
+}
+
+.uploadForm button {
+    font: inherit;
+    border-radius: 6px;
+    padding: 0.25em;
+    color: var(--color-blue-unit-text);
+    background: var(--color-blue-unit-bg);
+    border: 1px solid var(--color-blue-unit-stroke);
+    cursor: pointer;
 }
