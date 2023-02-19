@@ -26,6 +26,7 @@ code {
     --color-blue-unit-bg: hsla(206deg 81% 25% / 1.0);
     --color-blue-unit-text: hsla(197deg 100% 93% / 1.0);
     --color-blue-unit-stroke: hsla(180deg 100% 84% / 1.0);
+    --color-blue-unitrow-building3: rgb(56, 139, 194);
     --color-blue-unitrow-building2: hsla(204deg 85% 30% / 1.0);
     --color-blue-unitrow-building: hsla(204deg 85% 19% / 1.0);
     --color-white-soft: hsla(0 0% 100% / 0.774);

@@ -6,8 +6,14 @@ export const buildOrder: BuildOrder = {
     buildings: []
 }
 
-for (const [index, goodBuilding] of goodBuildOrder.buildings.entries()) {
-    const badBuilding = badBuildOrder.buildings[index]
+const goodBuildOrderCopy = structuredClone(goodBuildOrder)
+const badBuildOrderCopy = structuredClone(badBuildOrder)
+
+for (const [index, goodBuilding] of goodBuildOrderCopy.buildings.entries()) {
+    const badBuilding = badBuildOrderCopy.buildings[index]
+
+    goodBuilding.playerIndex = 0
+    badBuilding.playerIndex = 1
 
     buildOrder.buildings.push(goodBuilding, badBuilding)
 }

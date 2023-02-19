@@ -8,6 +8,7 @@ export type Building = {
     name: BuildingName
     startTime: number
     production: ProductionEvent[]
+    playerIndex?: number
 }
 
 export type ProductionEvent = {
