@@ -14,8 +14,10 @@ Else {
 echo "Repo Root: $repoRoot"
 
 Import-Module "C:/repos/shared-resources/pipelines/scripts/common.psm1" -Force
+Import-Module "$repoRoot/scripts/common.psm1" -Force
 
 $sharedResourceNames = Get-ResourceNames $sharedResourceGroupName $sharedRgString
+$sc2ResourceNames = Get-LocalResourceNames $sc2ResourceGroupName 'unused'
 
 Write-Step "Create Resource Group: $sc2ResourceGroupName"
 az group create -l $resourceGroupLocation -g $sc2ResourceGroupName --query name -o tsv
@@ -37,13 +39,16 @@ $pythonProcessorImageTag = $(Get-Date -Format "yyyyMMddhhmm")
 $pythonProcessorImageName = "$($sharedResourceVars.registryUrl)/${pythonProcessorContainerName}:${pythonProcessorImageTag}"
 
 $data = [ordered]@{
-  "storageConnectionString"    = "$($storageConnectionString.Substring(0, 15))..."
-  "clientImageName"            = $clientImageName
+  "storageConnectionString"         = "$($storageConnectionString.Substring(0, 35))..."
+  "storageContainerNameUnprocessed" = $($sc2ResourceNames.storageContainerNameUnprocessed)
+  "storageContainerNameProcessed"   = $($sc2ResourceNames.storageContainerNameProcessed)
+  "clientImageName"                 = $clientImageName
+  "pythonProcessorContainerName"    = $pythonProcessorContainerName
 
-  "containerAppsEnvResourceId" = $($sharedResourceVars.containerAppsEnvResourceId)
-  "registryUrl"                = $($sharedResourceVars.registryUrl)
-  "registryUsername"           = $($sharedResourceVars.registryUsername)
-  "registryPassword"           = "$($($sharedResourceVars.registryPassword).Substring(0, 5))..."
+  "containerAppsEnvResourceId"      = $($sharedResourceVars.containerAppsEnvResourceId)
+  "registryUrl"                     = $($sharedResourceVars.registryUrl)
+  "registryUsername"                = $($sharedResourceVars.registryUsername)
+  "registryPassword"                = "$($($sharedResourceVars.registryPassword).Substring(0, 5))..."
 }
 
 Write-Hash "Data" $data
@@ -76,7 +81,7 @@ $clientFqdn = $(az deployment group create `
     imageName=$clientImageName `
     containerName=$clientContainerName `
     storageConnectionString=$storageConnectionString `
-    storageContainerName="replays-unprocessed" `
+    storageContainerName=$($sc2ResourceNames.storageContainerNameUnprocessed) `
     --query "properties.outputs.fqdn.value" `
     -o tsv)
 
@@ -85,16 +90,16 @@ Write-Output $clientUrl
 
 
 Write-Step "Build and Push $pythonProcessorImageName Image"
-docker build -t $pythonProcessorImageName "$repoRoot/services/python-processor"
+docker build -t $pythonProcessorImageName "$repoRoot/replay-processor"
 docker push $pythonProcessorImageName
 # TODO: Investigate why using 'az acr build' does not work
-# az acr build -r $registryUrl -t $pythonProcessorImageName ./services/python-processor
+# az acr build -r $registryUrl -t $pythonProcessorImageName ./replay-processor
 
 Write-Step "Deploy $pythonProcessorImageName Container App"
 $pythonProcessorBicepContainerDeploymentFilePath = "$repoRoot/bicep/modules/pythonProcessorContainerApp.bicep"
 
 az deployment group create `
-  -g $batchProcessorResourceGroupName `
+  -g $sc2ResourceGroupName `
   -f $pythonProcessorBicepContainerDeploymentFilePath `
   -p managedEnvironmentResourceId=$($sharedResourceVars.containerAppsEnvResourceId) `
   registryUrl=$($sharedResourceVars.registryUrl) `
@@ -102,10 +107,9 @@ az deployment group create `
   registryPassword=$($sharedResourceVars.registryPassword) `
   imageName=$pythonProcessorImageName `
   containerName=$pythonProcessorContainerName `
-  queueName=$pythonStorageQueueName `
   storageAccountName=$($sharedResourceNames.storageAccount) `
   storageConnectionString=$storageConnectionString `
-  storageContainerNameUnprocessed="replays-unprocessed" `
-  storageContainerNameProcessed="replays-processed" `
+  storageContainerNameUnprocessed=$($sc2ResourceNames.storageContainerNameUnprocessed) `
+  storageContainerNameProcessed=$($sc2ResourceNames.storageContainerNameProcessed) `
   --query "properties.provisioningState" `
   -o tsv
