@@ -60,21 +60,21 @@ docker push $clientImageName
 
 # # az acr build -r $registryUrl -t $clientImageName "$repoRoot/apps/website"
 
+Write-Step "Deploy $clientImageName Container App"
+$clientBicepContainerDeploymentFilePath = "$repoRoot/bicep/modules/clientContainerApp.bicep"
+$clientFqdn = $(az deployment group create `
+    -g $sc2ResourceGroupName `
+    -f $clientBicepContainerDeploymentFilePath `
+    -p managedEnvironmentResourceId=$($sharedResourceVars.containerAppsEnvResourceId) `
+    registryUrl=$($sharedResourceVars.registryUrl) `
+    registryUsername=$($sharedResourceVars.registryUsername) `
+    registryPassword=$($sharedResourceVars.registryPassword) `
+    imageName=$clientImageName `
+    containerName=$clientContainerName `
+    storageConnectionString=$storageConnectionString `
+    storageContainerName="replays-unprocessed" `
+    --query "properties.outputs.fqdn.value" `
+    -o tsv)
 
-# Write-Step "Deploy $clientImageName Container App"
-# $clientBicepContainerDeploymentFilePath = "$repoRoot/bicep/modules/clientContainerApp.bicep"
-# $clientFqdn = $(az deployment group create `
-#     -g $batchProcessorResourceGroupName `
-#     -f $clientBicepContainerDeploymentFilePath `
-#     -p managedEnvironmentResourceId=$($sharedResourceVars.containerAppsEnvResourceId) `
-#     registryUrl=$($sharedResourceVars.registryUrl) `
-#     registryUsername=$($sharedResourceVars.registryUsername) `
-#     registryPassword=$($sharedResourceVars.registryPassword) `
-#     imageName=$clientImageName `
-#     containerName=$clientContainerName `
-#     storageConnectionString=$storageConnectionString `
-#     --query "properties.outputs.fqdn.value" `
-#     -o tsv)
-
-# $clientUrl = "https://$clientFqdn"
-# Write-Output $clientUrl
+$clientUrl = "https://$clientFqdn"
+Write-Output $clientUrl
