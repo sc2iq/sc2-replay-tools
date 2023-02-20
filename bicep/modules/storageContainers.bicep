@@ -15,9 +15,19 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01'
   name: 'default'
 }
 
-param rawReplaysContainerName string = 'replays-unprocessed'
+param replaysContainerNameUnprocessed string = 'replays-unprocessed'
 
-resource rawReplays 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
+resource replaysContainerUnprocessed 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
   parent: blobService
-  name: rawReplaysContainerName
+  name: replaysContainerNameUnprocessed
+}
+
+param replaysContainerNameProcessed string = 'replays-processed'
+
+resource replaysContainerProcessed 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
+  parent: blobService
+  name: replaysContainerNameProcessed
+  properties: {
+    publicAccess: 'Blob'
+  }
 }
