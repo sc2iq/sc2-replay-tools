@@ -1,4 +1,4 @@
-import { ActionArgs, LinksFunction, LoaderArgs, unstable_composeUploadHandlers, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node"
+import { ActionArgs, LinksFunction, LoaderArgs, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react"
 import { createRef } from "react"
 import { buildOrder as badBuildOrder } from "~/buildOrders/bad"
@@ -34,7 +34,7 @@ export const action = async ({ request }: ActionArgs) => {
     const replayFileEntries = formData.getAll('replayFileInput')
     for (const replayFileEntry of replayFileEntries) {
       const replayFile = replayFileEntry as File
-      const blobName = `replay-${Date.now()}`
+      const blobName = `replay-${Date.now()}.SC2Replay`
       const blobClient = getBlockBlobClient(blobName)
       console.log(`Uploading ${replayFile.name} as ${blobName} to ${blobClient.containerName}`)
 
@@ -45,8 +45,6 @@ export const action = async ({ request }: ActionArgs) => {
             blobContentType: replayFile.type
           }
         })
-
-      console.log({ url: blobClient.url })
 
       return {
         blobUrl: blobClient.url
@@ -61,7 +59,7 @@ export default function Index() {
   const { goodBuildOrder, badBuildOrder, combinedBuildOrder } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const formRef = createRef<HTMLFormElement>()
-
+  const transition = useTransition()
   if (typeof actionData?.blobUrl === 'string') {
     formRef.current?.reset()
     console.log(`Reset form!`)
@@ -75,8 +73,15 @@ export default function Index() {
         <input type="hidden" name="formName" value="replayFile" />
         <button type="submit">Upload</button>
       </Form>
-      {actionData?.blobUrl && (
-        <div>Uploaded blob to: <a href={actionData.blobUrl}>{actionData?.blobUrl}</a></div>
+      {transition?.state === 'submitting' && (
+        <div>
+          Pending...
+        </div>
+      )}
+      {transition?.state === 'idle' && actionData?.blobUrl && (
+        <div className="uploadConfirmation">
+          Uploaded replay to: <a href={actionData.blobUrl}>{actionData?.blobUrl}</a>
+        </div>
       )}
 
       <h2 className="replayTitle">GoodBuildOrder</h2>

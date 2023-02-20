@@ -65,7 +65,7 @@ export const buildOrder: BuildOrder = {
                     name: "Orbital",
                     startTime: 187,
                 },
-                { name: 'SCV', startTime: 167 },
+                { name: 'SCV', startTime: 207 },
             ]
         },
         {
