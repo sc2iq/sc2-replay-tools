@@ -59,7 +59,7 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
             }
             {
               name: 'STORAGE_CONNECTION_STRING'
-              value: storageConnectionStringSecretName
+              secretRef: storageConnectionStringSecretName
             }
             {
               name: 'STORAGE_CONTAINER_NAME_UNPROCESSED'

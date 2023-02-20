@@ -43,7 +43,7 @@ $data = [ordered]@{
   "storageContainerNameUnprocessed" = $($sc2ResourceNames.storageContainerNameUnprocessed)
   "storageContainerNameProcessed"   = $($sc2ResourceNames.storageContainerNameProcessed)
   "clientImageName"                 = $clientImageName
-  "pythonProcessorContainerName"    = $pythonProcessorContainerName
+  "pythonProcessorImageName"        = $pythonProcessorImageName
 
   "containerAppsEnvResourceId"      = $($sharedResourceVars.containerAppsEnvResourceId)
   "registryUrl"                     = $($sharedResourceVars.registryUrl)
