@@ -1,4 +1,4 @@
-param name string = '${resourceGroup().name}-client'
+param name string = '${resourceGroup().name}-replay-analyzer-client'
 param location string = resourceGroup().location
 
 param managedEnvironmentResourceId string
@@ -14,7 +14,7 @@ param storageConnectionString string
 param storageContainerName string
 
 var registryPassworldSecretName = 'container-registry-password'
-var storageConnectionStringSecretName = 'queue-connection-string'
+var storageConnectionStringSecretName = 'storage-connection-string'
 
 resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
   name: name
@@ -57,7 +57,7 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
           }
           env: [
             {
-              name: 'STORAGE_CONNECTION_STRING'
+              name: 'STORAGE_ACCOUNT_CONNECTION_STRING'
               secretRef: storageConnectionStringSecretName
             }
             {
