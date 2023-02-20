@@ -1,14 +1,17 @@
 [tool.poetry]
-name = "sc2replayreader"
+name = "replay-processor"
 version = "0.1.0"
 description = "SC2 Replay Parser"
 authors = ["Matt Mazzola <mattmazzola@live.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "replay_processor"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 sc2reader = "^1.8.0"
+python-dotenv = "^0.21.1"
+azure-storage-blob = "^12.14.1"
 
 
 [build-system]

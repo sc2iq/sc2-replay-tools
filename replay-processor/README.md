@@ -54,6 +54,7 @@ docker run -it `
 
 - https://github.com/GraylinKim/sc2reader
 - https://sc2reader.readthedocs.io/en/latest/
+- https://keda.sh/docs/2.8/scalers/azure-storage-blob/
 
 ### Notes
 
