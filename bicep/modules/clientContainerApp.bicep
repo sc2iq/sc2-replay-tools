@@ -11,7 +11,8 @@ param registryPassword string
 
 @secure()
 param storageConnectionString string
-param storageContainerName string
+param storageContainerNameUnprocessed string
+param storageContainerNameProcessed string
 
 var registryPassworldSecretName = 'container-registry-password'
 var storageConnectionStringSecretName = 'storage-connection-string'
@@ -61,8 +62,12 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
               secretRef: storageConnectionStringSecretName
             }
             {
-              name: 'STORAGE_CONTAINER_NAME'
-              value: storageContainerName
+              name: 'STORAGE_CONTAINER_NAME_UNPROCESSED'
+              value: storageContainerNameUnprocessed
+            }
+            {
+              name: 'STORAGE_CONTAINER_NAME_PROCESSED'
+              value: storageContainerNameProcessed
             }
           ]
         }

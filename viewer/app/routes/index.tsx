@@ -1,3 +1,4 @@
+import { BlobClient } from "@azure/storage-blob"
 import { ActionArgs, LinksFunction, LoaderArgs, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react"
 import { createRef } from "react"
@@ -5,7 +6,8 @@ import { buildOrder as badBuildOrder } from "~/buildOrders/bad"
 import { buildOrder as combinedBuildOrder } from "~/buildOrders/combined"
 import { buildOrder as goodBuildOrder } from "~/buildOrders/good"
 import { BuildOrderComponent } from "~/components/buildOrder"
-import getBlockBlobClient from "~/services/azureblob.server"
+import { getBlobClient, getBlockBlobClient, waitForBlob } from "~/services/azureblob.server"
+import { delay } from "~/utilities"
 import indexStyles from "../styles/index.css"
 
 export const loader = async ({ }: LoaderArgs) => {
@@ -34,20 +36,37 @@ export const action = async ({ request }: ActionArgs) => {
     const replayFileEntries = formData.getAll('replayFileInput')
     for (const replayFileEntry of replayFileEntries) {
       const replayFile = replayFileEntry as File
-      const blobName = `replay-${Date.now()}.SC2Replay`
-      const blobClient = getBlockBlobClient(blobName)
-      console.log(`Uploading ${replayFile.name} as ${blobName} to ${blobClient.containerName}`)
+      const blobName = `replay-${Date.now()}`
+      const replayUnprocessedBlobName = `${blobName}.SC2Replay`
+      const replayProcessedBlobName = `${blobName}.json`
+      const replayUnprocessedBlobClient = getBlockBlobClient(replayUnprocessedBlobName)
+      const replayProcessedBlobClient = getBlobClient(replayProcessedBlobName)
+      console.log(`Uploading ${replayFile.name} as ${replayUnprocessedBlobName} to ${replayUnprocessedBlobClient.containerName}`)
 
-      const uploadedBlobResponse = await blobClient.uploadData(
+      await replayUnprocessedBlobClient.uploadData(
         await replayFile.arrayBuffer(),
         {
           blobHTTPHeaders: {
-            blobContentType: replayFile.type
-          }
+            blobContentType: replayFile.type,
+          },
         })
 
+      const maxWaitTime = 10000
+      const result = await Promise.race([
+        delay(maxWaitTime),
+        waitForBlob(replayProcessedBlobClient)
+      ])
+
+      if (result instanceof BlobClient) {
+        console.log(`Blob processed!`)
+      }
+      else {
+        console.log(`Blob was NOT processed within ${maxWaitTime/1000} seconds`)
+      }
+
       return {
-        blobUrl: blobClient.url
+        blobUrl: replayUnprocessedBlobClient.url,
+        processedReplayUrl: replayProcessedBlobClient.url,
       }
     }
   }
@@ -73,14 +92,10 @@ export default function Index() {
         <input type="hidden" name="formName" value="replayFile" />
         <button type="submit">Upload</button>
       </Form>
-      {transition?.state === 'submitting' && (
-        <div>
-          Pending...
-        </div>
-      )}
-      {transition?.state === 'idle' && actionData?.blobUrl && (
+      {transition?.state === 'idle' && actionData?.blobUrl && actionData?.processedReplayUrl && (
         <div className="uploadConfirmation">
-          Uploaded replay to: <a href={actionData.blobUrl}>{actionData?.blobUrl}</a>
+          <div>Replay uploaded...</div>
+          <div>Processed Replay will be available here: <a href={actionData.processedReplayUrl} target="_blank">{actionData.processedReplayUrl}</a></div>
         </div>
       )}
 

@@ -81,7 +81,8 @@ $clientFqdn = $(az deployment group create `
     imageName=$clientImageName `
     containerName=$clientContainerName `
     storageConnectionString=$storageConnectionString `
-    storageContainerName=$($sc2ResourceNames.storageContainerNameUnprocessed) `
+    storageContainerNameUnprocessed=$($sc2ResourceNames.storageContainerNameUnprocessed) `
+    storageContainerNameProcessed=$($sc2ResourceNames.storageContainerNameProcessed) `
     --query "properties.outputs.fqdn.value" `
     -o tsv)
 

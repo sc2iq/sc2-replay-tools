@@ -26,15 +26,15 @@ export const BuildOrderComponent: React.FC<Props> = props => {
                     {Array(Math.ceil(maxTime / timeSlice)).fill(0).map((_, i) => {
                         const totalSeconds = i * timeSlice
 
-                        return <div>{getDisplayTimeFromTotalSeconds(totalSeconds)}</div>
+                        return <div key={i}>{getDisplayTimeFromTotalSeconds(totalSeconds)}</div>
                     })}
                 </div>
             </div>
-            {props.buildOrder.buildings.map((building, i) => {
+            {props.buildOrder.buildings.map((building, buildingIndex) => {
 
                 const utilization = getUtilization(building, latestEndTime)
                 return (
-                    <div className={`row player-index-${building.playerIndex}`}>
+                    <div className={`row player-index-${building.playerIndex}`} key={buildingIndex}>
                         <div className="time">{getDisplayTimeFromTotalSeconds(building.startTime)}</div>
                         <div className="buildingName">{building.name}</div>
                         <div className="utilization">{Math.floor(utilization * 100)}%</div>
@@ -47,12 +47,13 @@ export const BuildOrderComponent: React.FC<Props> = props => {
                                             startTime={building.startTime}
                                         />
                                     )}
-                                    {building.production.map(unit => {
+                                    {building.production.map((unit, unitIndex) => {
                                         return (
                                             <Unit
                                                 name={unit.name}
                                                 startTime={unit.startTime}
                                                 building={building}
+                                                key={unitIndex}
                                             />
                                         )
                                     })}
