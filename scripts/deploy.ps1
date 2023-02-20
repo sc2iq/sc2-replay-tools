@@ -28,9 +28,13 @@ $storageConnectionString = $(az storage account show-connection-string -g $share
 Write-Step "Fetch params from Azure"
 $sharedResourceVars = Get-SharedResourceDeploymentVars $sharedResourceGroupName $sharedRgString
 
-$clientContainerName = "$sharedResourceGroupName-replay-analyzer-client"
+$clientContainerName = "$sc2ResourceGroupName-replay-analyzer-client"
 $clientImageTag = $(Get-Date -Format "yyyyMMddhhmm")
 $clientImageName = "$($sharedResourceVars.registryUrl)/${clientContainerName}:${clientImageTag}"
+
+$pythonProcessorContainerName = "$sc2ResourceGroupName-replay-processor"
+$pythonProcessorImageTag = $(Get-Date -Format "yyyyMMddhhmm")
+$pythonProcessorImageName = "$($sharedResourceVars.registryUrl)/${pythonProcessorContainerName}:${pythonProcessorImageTag}"
 
 $data = [ordered]@{
   "storageConnectionString"    = "$($storageConnectionString.Substring(0, 15))..."
@@ -78,3 +82,30 @@ $clientFqdn = $(az deployment group create `
 
 $clientUrl = "https://$clientFqdn"
 Write-Output $clientUrl
+
+
+Write-Step "Build and Push $pythonProcessorImageName Image"
+docker build -t $pythonProcessorImageName "$repoRoot/services/python-processor"
+docker push $pythonProcessorImageName
+# TODO: Investigate why using 'az acr build' does not work
+# az acr build -r $registryUrl -t $pythonProcessorImageName ./services/python-processor
+
+Write-Step "Deploy $pythonProcessorImageName Container App"
+$pythonProcessorBicepContainerDeploymentFilePath = "$repoRoot/bicep/modules/pythonProcessorContainerApp.bicep"
+
+az deployment group create `
+  -g $batchProcessorResourceGroupName `
+  -f $pythonProcessorBicepContainerDeploymentFilePath `
+  -p managedEnvironmentResourceId=$($sharedResourceVars.containerAppsEnvResourceId) `
+  registryUrl=$($sharedResourceVars.registryUrl) `
+  registryUsername=$($sharedResourceVars.registryUsername) `
+  registryPassword=$($sharedResourceVars.registryPassword) `
+  imageName=$pythonProcessorImageName `
+  containerName=$pythonProcessorContainerName `
+  queueName=$pythonStorageQueueName `
+  storageAccountName=$($sharedResourceNames.storageAccount) `
+  storageConnectionString=$storageConnectionString `
+  storageContainerNameUnprocessed="replays-unprocessed" `
+  storageContainerNameProcessed="replays-processed" `
+  --query "properties.provisioningState" `
+  -o tsv
