@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=${CLIENT_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
