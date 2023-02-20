@@ -40,15 +40,15 @@ async def main() -> None:
         file_dir = pathlib.Path(__file__).parent.resolve()
         download_file_path = pathlib.Path(os.path.join(file_dir, '..', 'replays', blob.name)).resolve()
 
-        print(f'Downloading replay: {blob_client.url} to: {download_file_path}')
+        print(f'Downloading replay from: {blob_client.url}\n saving to: {download_file_path}')
         with open(file=download_file_path, mode="wb") as download_file:
             download_file.write(blob_client.download_blob().readall())
 
-        print(f'Saved! {download_file_path.name}')
+        print(f'Saved local file: {download_file_path.name}')
         replays_unprocessed_local.append(download_file_path)
 
         blob_client.delete_blob()
-        print(f'Deleted: {blob.name}')
+        print(f'Deleted remote blob: {blob.name}')
 
     if len(replays_unprocessed_local) == 0:
         print(f'There were not any replays available in the container. Exiting early.')
