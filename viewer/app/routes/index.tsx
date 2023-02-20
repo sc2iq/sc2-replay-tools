@@ -69,7 +69,7 @@ export default function Index() {
     <>
       <Form method="post" encType="multipart/form-data" className="uploadForm" ref={formRef}>
         <label htmlFor="replayFileInput">Replay File:</label>
-        <input type="file" id="replayFileInput" name="replayFileInput" accept=".sc2replay" />
+        <input type="file" id="replayFileInput" name="replayFileInput" accept=".sc2replay" required />
         <input type="hidden" name="formName" value="replayFile" />
         <button type="submit">Upload</button>
       </Form>
