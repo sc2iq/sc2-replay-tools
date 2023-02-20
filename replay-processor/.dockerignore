@@ -1,2 +1,4 @@
 .venv
-replays/
+__pycache__
+
+*.SC2Replay

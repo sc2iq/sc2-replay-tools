@@ -27,11 +27,18 @@ sc2json -i 4 -e utf8 './replays/Data-C (8).SC2Replay'
 docker build -t sc2-replay-processor .
 ```
 
+### Run with Defualt replay
+
+```powershell
+docker run -it --rm `
+    sc2-replay-processor
+```
+
 ### Start Bash in Container
 
 ```powershell
 $replaysPath = "$($pwd.path)\replays"
-docker run -it `
+docker run -it --rm `
     --entrypoint /bin/bash `
     -v ${replaysPath}:/replays `
     sc2-replay-processor
@@ -39,15 +46,6 @@ docker run -it `
 
 ```bash
 poetry run python ./src/read.py '/replays/Data-C (8).SC2Replay'
-```
-
-### Run with Defualt replay
-
-```powershell
-$replaysPath = "$($pwd.path)\replays"
-docker run -it `
-    -v ${replaysPath}:/replays `
-    sc2-replay-processor
 ```
 
 ## Resources
