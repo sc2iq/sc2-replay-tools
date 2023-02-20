@@ -28,7 +28,7 @@ $storageConnectionString = $(az storage account show-connection-string -g $share
 Write-Step "Fetch params from Azure"
 $sharedResourceVars = Get-SharedResourceDeploymentVars $sharedResourceGroupName $sharedRgString
 
-$clientContainerName = "$sharedResourceGroupName-replay-anayzer-client"
+$clientContainerName = "$sharedResourceGroupName-replay-analyzer-client"
 $clientImageTag = $(Get-Date -Format "yyyyMMddhhmm")
 $clientImageName = "$($sharedResourceVars.registryUrl)/${clientContainerName}:${clientImageTag}"
 
@@ -52,13 +52,14 @@ az deployment group create `
   --query "properties.provisioningState" `
   -o tsv
 
-Write-Step "Provision $sharedResourceGroupName Resources"
+Write-Step "Provision $sc2ResourceGroupName Resources"
 
-# Write-Step "Build and Push $clientImageName Image"
-# docker build -t $clientImageName "$repoRoot/apps/website"
-# docker push $clientImageName
+Write-Step "Build and Push $clientImageName Image"
+docker build -t $clientImageName "$repoRoot/viewer"
+docker push $clientImageName
 
 # # az acr build -r $registryUrl -t $clientImageName "$repoRoot/apps/website"
+
 
 # Write-Step "Deploy $clientImageName Container App"
 # $clientBicepContainerDeploymentFilePath = "$repoRoot/bicep/modules/clientContainerApp.bicep"
