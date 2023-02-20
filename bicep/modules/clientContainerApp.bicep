@@ -9,22 +9,12 @@ param registryUsername string
 @secure()
 param registryPassword string
 
-param nodeQueueName string
-param pythonQueueName string
 @secure()
 param storageConnectionString string
-
-@secure()
-param serviceBusConnectionString string
-param serviceBusQueueName string
-
-@secure()
-param databaseConnectionString string
+param storageContainerName string
 
 var registryPassworldSecretName = 'container-registry-password'
-var databaseUrlSecretName = 'db-url'
 var storageConnectionStringSecretName = 'queue-connection-string'
-var serviceBusConnectionStringSecretName = 'service-bus-queue-connection-string'
 
 resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
   name: name
@@ -50,16 +40,8 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
           value: registryPassword
         }
         {
-          name: databaseUrlSecretName
-          value: databaseConnectionString
-        }
-        {
           name: storageConnectionStringSecretName
           value: storageConnectionString
-        }
-        {
-          name: serviceBusConnectionStringSecretName
-          value: serviceBusConnectionString
         }
       ]
     }
@@ -70,39 +52,23 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
           name: containerName
           // https://learn.microsoft.com/en-us/azure/container-apps/containers#configuration
           resources: {
-            cpu: any('0.5')
-            memory: '1.0Gi'
+            cpu: any('0.25')
+            memory: '0.5Gi'
           }
           env: [
-            {
-              name: 'DATABASE_URL'
-              secretRef: databaseUrlSecretName
-            }
             {
               name: 'STORAGE_CONNECTION_STRING'
               secretRef: storageConnectionStringSecretName
             }
             {
-              name: 'STORAGE_NODE_QUEUE_NAME'
-              value: nodeQueueName
-            }
-            {
-              name: 'STORAGE_PYTHON_QUEUE_NAME'
-              value: pythonQueueName
-            }
-            {
-              name: 'SERVICE_BUS_NAMESPACE_CONNECTION_STRING'
-              secretRef: serviceBusConnectionStringSecretName
-            }
-            {
-              name: 'SERVICE_BUS_NODE_QUEUE_NAME'
-              value: serviceBusQueueName
+              name: 'STORAGE_CONTAINER_NAME'
+              value: storageContainerName
             }
           ]
         }
       ]
       scale: {
-        minReplicas: 1
+        minReplicas: 0
         maxReplicas: 1
       }
     }
