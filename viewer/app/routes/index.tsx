@@ -1,5 +1,5 @@
 import { BlobClient } from "@azure/storage-blob"
-import { ActionArgs, LinksFunction, LoaderArgs, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node"
+import { ActionArgs, fetch, LinksFunction, LoaderArgs, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node"
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react"
 import { createRef } from "react"
 import { buildOrder as badBuildOrder } from "~/buildOrders/bad"
@@ -51,22 +51,29 @@ export const action = async ({ request }: ActionArgs) => {
           },
         })
 
-      const maxWaitTime = 10000
-      const result = await Promise.race([
+      const maxWaitTime = 100_000
+      const savedProcessedBlobClient = await Promise.race([
         delay(maxWaitTime),
         waitForBlob(replayProcessedBlobClient)
       ])
 
-      if (result instanceof BlobClient) {
-        console.log(`Blob processed!`)
+      if (savedProcessedBlobClient instanceof BlobClient) {
+        console.log(`Blob saved to: ${replayProcessedBlobClient.url}`)
       }
       else {
-        console.log(`Blob was NOT processed within ${maxWaitTime/1000} seconds`)
+        console.log(`Blob was NOT processed within ${maxWaitTime / 1000} seconds`)
+      }
+
+      const replayResponse = await fetch(replayProcessedBlobClient.url)
+      let replayJson: object = {}
+      if (replayResponse.ok) {
+        replayJson = await replayResponse.json()
       }
 
       return {
         blobUrl: replayUnprocessedBlobClient.url,
         processedReplayUrl: replayProcessedBlobClient.url,
+        replayJson,
       }
     }
   }
@@ -79,6 +86,9 @@ export default function Index() {
   const actionData = useActionData<typeof action>()
   const formRef = createRef<HTMLFormElement>()
   const transition = useTransition()
+  if (transition?.state === 'submitting') {
+    formRef.current?.reset()
+  }
   if (typeof actionData?.blobUrl === 'string') {
     formRef.current?.reset()
     console.log(`Reset form!`)
@@ -92,11 +102,21 @@ export default function Index() {
         <input type="hidden" name="formName" value="replayFile" />
         <button type="submit">Upload</button>
       </Form>
+      {transition?.state === 'submitting' && (
+        <div className="uploadConfirmation">
+          <div>Processing...</div>
+        </div>
+      )}
       {transition?.state === 'idle' && actionData?.blobUrl && actionData?.processedReplayUrl && (
         <div className="uploadConfirmation">
           <div>Replay uploaded...</div>
           <div>Processed Replay will be available here: <a href={actionData.processedReplayUrl} target="_blank">{actionData.processedReplayUrl}</a></div>
         </div>
+      )}
+      {typeof actionData?.replayJson === 'object' && (
+        <pre>
+          <code>{JSON.stringify(actionData.replayJson, null, 4)}</code>
+        </pre>
       )}
 
       <h2 className="replayTitle">GoodBuildOrder</h2>

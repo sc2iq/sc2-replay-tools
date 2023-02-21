@@ -31,7 +31,6 @@ export const BuildOrderComponent: React.FC<Props> = props => {
                 </div>
             </div>
             {props.buildOrder.buildings.map((building, buildingIndex) => {
-
                 const utilization = getUtilization(building, latestEndTime)
                 return (
                     <div className={`row player-index-${building.playerIndex}`} key={buildingIndex}>

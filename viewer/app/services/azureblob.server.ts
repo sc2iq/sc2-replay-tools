@@ -28,12 +28,23 @@ export function getBlobClient(blobName: string) {
     return blobClient
 }
 
-export async function waitForBlob(blobClient: BlobClient, intervalMs = 1000): Promise<BlobClient> {
+export async function waitForBlob(
+    blobClient: BlobClient,
+    intervalMs = 1000,
+    maxIterations = 100,
+): Promise<BlobClient> {
     console.log(`Poll for ${blobClient.url} every ${intervalMs} ms`)
+    let iterationCount = 1
 
     while (!(await blobClient.exists())) {
-        console.log(`Blob ${blobClient.url} does not exist yet. Delay: ${intervalMs} ms`)
+        console.log(`${iterationCount.toString().padStart(2, '0')}: Blob ${blobClient.url} does not exist yet. Delay: ${intervalMs} ms ${Date.now()}`)
         await delay(intervalMs)
+
+        iterationCount += 1
+        if (iterationCount > maxIterations) {
+            console.log(`Blob polling loop reached the max interations: ${maxIterations}! Stopping poll.`)
+            break
+        }
     }
 
     return blobClient
