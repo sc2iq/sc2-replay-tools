@@ -14,16 +14,18 @@ docker build -t sc2-replay-analyzer-client .
 $sharedResourceGroupName = "shared"
 $sharedRgString = 'klgoyi'
 
-Import-Module "C:/repos/shared-resources/pipelines/scripts/common.psm1" -Force
+Import-Module "/workspace/shared-resources/pipelines/scripts/common.psm1" -Force
 
 $sharedResourceNames = Get-ResourceNames $sharedResourceGroupName $sharedRgString
 
 $storageConnectionString = $(az storage account show-connection-string -g $sharedResourceGroupName -n $sharedResourceNames.storageAccount --query "connectionString" -o tsv)
-$storageContainerName = 'replays-unprocessed'
+$storageContainerNameUnprocessed = 'replays-unprocessed'
+$storageContainerNameProcessed = 'replays-processed'
 
 docker run -it --rm `
     -p 3000:8080 `
     -e STORAGE_ACCOUNT_CONNECTION_STRING=$storageConnectionString `
-    -e STORAGE_CONTAINER_NAME=$storageContainerName `
+    -e STORAGE_CONTAINER_NAME_UNPROCESSED=$storageContainerNameUnprocessed `
+    -e STORAGE_CONTAINER_NAME_PROCESSED=$storageContainerNameProcessed `
     sc2-replay-analyzer-client
 ```

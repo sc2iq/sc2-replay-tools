@@ -1,5 +1,5 @@
 # base node image
-FROM node:20-slim AS base
+FROM node:18-slim AS base
 
 # Work around Debian GPG key expiration issues
 RUN apt-get update && \
@@ -14,7 +14,7 @@ FROM base AS deps
 WORKDIR /myapp
 
 ADD package.json package-lock.json* ./
-RUN npm ci --prefer-offline --no-audit || npm install --prefer-offline --no-audit
+RUN npm ci --prefer-offline --no-audit
 
 # Setup production node_modules
 FROM base AS production-deps
