@@ -8,6 +8,7 @@
     },
   ],
   "settings": {
+    "powershell.cwd": "/workspace/dummyOne/sc2replay-tools",
     "dotenv.enableAutocloaking": false
   }
 }
