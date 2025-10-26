@@ -1,16 +1,20 @@
 # base node image
-FROM node:20-alpine AS base
+FROM node:20-slim AS base
 
-# Install openssl for Prisma (Alpine uses apk, not affected by Debian GPG issues)
-RUN apk add --no-cache openssl
+# Work around Debian GPG key expiration issues
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install all node_modules, including dev dependencies
 FROM base AS deps
 
 WORKDIR /myapp
 
-ADD package.json ./
-RUN npm install
+ADD package.json package-lock.json* ./
+RUN npm ci --prefer-offline --no-audit || npm install --prefer-offline --no-audit
 
 # Setup production node_modules
 FROM base AS production-deps
