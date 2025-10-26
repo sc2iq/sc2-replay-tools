@@ -1,22 +1,21 @@
 # base node image
-FROM node:17-bullseye-slim as base
+FROM node:20-alpine AS base
 
-# set for base and all layer that inherit from it
-ENV NODE_ENV production
-
-# Install openssl for Prisma
-RUN apt-get update && apt-get install -y openssl sqlite3
+# Install openssl for Prisma (Alpine uses apk, not affected by Debian GPG issues)
+RUN apk add --no-cache openssl
 
 # Install all node_modules, including dev dependencies
-FROM base as deps
+FROM base AS deps
 
 WORKDIR /myapp
 
 ADD package.json ./
-RUN npm install --production=false
+RUN npm install
 
 # Setup production node_modules
-FROM base as production-deps
+FROM base AS production-deps
+
+ENV NODE_ENV="production"
 
 WORKDIR /myapp
 
@@ -25,7 +24,10 @@ ADD package.json ./
 RUN npm prune --production
 
 # Build the app
-FROM base as build
+FROM base AS build
+
+# Override NODE_ENV for build stage to ensure dev dependencies work
+ENV NODE_ENV="development"
 
 WORKDIR /myapp
 
