@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: sc2replay-tools
+
+metadata:
+    template: azd-init@1.21.3
+
+services:
+    viewer:
+        project: viewer
+        host: containerapp
+        language: ts
+        dist: build
+        docker:
+            path: Dockerfile
+
+    replay-processor:
+        project: replay-processor
+        host: containerapp
+        language: docker
+        docker:
+            path: Dockerfile
+
+resources:
+    viewer:
+        type: host.containerapp
+        port: 8080

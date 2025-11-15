@@ -1,1 +1,11 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Local environment variables
 .env
+
+!.devcontainer/devcontainer.env

@@ -1,15 +1,16 @@
-param name string = '${resourceGroup().name}-replay-processor'
+param name string = '${resourceGroup().name}-replay-analyzer-client'
 param location string = resourceGroup().location
+param tags object = {}
 
 param managedEnvironmentResourceId string
+
 param imageName string
 param containerName string
-param registryUrl string
+
 param registryUsername string
 @secure()
 param registryPassword string
 
-param storageAccountName string
 @secure()
 param storageConnectionString string
 param storageContainerNameUnprocessed string
@@ -18,16 +19,21 @@ param storageContainerNameProcessed string
 var registryPassworldSecretName = 'container-registry-password'
 var storageConnectionStringSecretName = 'storage-connection-string'
 
-resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
+resource containerApp 'Microsoft.App/containerApps@2025-02-02-preview' = {
   name: name
   location: location
+  tags: tags
   properties: {
     managedEnvironmentId: managedEnvironmentResourceId
     configuration: {
       activeRevisionsMode: 'Single'
+      ingress: {
+        external: true
+        targetPort: 8080
+      }
       registries: [
         {
-          server: registryUrl
+          server: '${registryUsername}.azurecr.io'
           username: registryUsername
           passwordSecretRef: registryPassworldSecretName
         }
@@ -48,17 +54,14 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
         {
           image: imageName
           name: containerName
+          // https://learn.microsoft.com/en-us/azure/container-apps/containers#configuration
           resources: {
             cpu: any('0.25')
             memory: '0.5Gi'
           }
           env: [
             {
-              name: 'NODE_ENV'
-              value: 'development'
-            }
-            {
-              name: 'STORAGE_CONNECTION_STRING'
+              name: 'STORAGE_ACCOUNT_CONNECTION_STRING'
               secretRef: storageConnectionStringSecretName
             }
             {
@@ -74,31 +77,11 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
       ]
       scale: {
         minReplicas: 0
-        maxReplicas: 2
-        rules: [
-          {
-            name: 'storage-blob'
-            custom: {
-              type: 'azure-blob'
-              metadata: {
-                blobContainerName: storageContainerNameUnprocessed
-                blobCount: string(1)
-                activationBlobCount: string(0)
-                connectionFromEnv: 'STORAGE_CONNECTION_STRING'
-                accountName: storageAccountName
-                cloud: 'AzurePublicCloud'
-                recursive: string(false)
-              }
-              auth: [
-                {
-                  secretRef: storageConnectionStringSecretName
-                  triggerParameter: 'connnection'
-                }
-              ]
-            }
-          }
-        ]
+        maxReplicas: 1
       }
     }
   }
 }
+
+output name string = containerApp.name
+output appUrl string = 'https://${containerApp.properties.configuration.ingress.fqdn}'

@@ -1,13 +1,6 @@
 # base node image
 FROM node:18-slim AS base
 
-# Work around Debian GPG key expiration issues
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates \
-    openssl && \
-    rm -rf /var/lib/apt/lists/*
-
 # Install all node_modules, including dev dependencies
 FROM base AS deps
 
