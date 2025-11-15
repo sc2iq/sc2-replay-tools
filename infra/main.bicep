@@ -46,24 +46,24 @@ resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
 
 var defaultImageName = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
-param clientContainerAppName string = '${resourceGroupName}-replay-analyzer-client'
-param clientContainerAppImageName string = ''
+param replayViewerContainerAppName string = '${resourceGroupName}-replay-analyzer-client'
+param replayViewerContainerAppImageName string = ''
 
 @secure()
 param storageConnectionString string
 param storageContainerNameUnprocessed string
 param storageContainerNameProcessed string
 
-module clientContainerApp 'modules/clientContainerApp.bicep' = {
-  name: 'clientContainerAppModule'
+module replayViewerContainerApp 'modules/clientContainerApp.bicep' = {
+  name: 'replayViewerContainerAppModule'
   scope: rg
   params: {
-    name: clientContainerAppName
+    name: replayViewerContainerAppName
     location: location
-    tags: union(tags, { 'azd-service-name': 'client' })
-    imageName: !empty(clientContainerAppImageName) ? clientContainerAppImageName : defaultImageName
+    tags: union(tags, { 'azd-service-name': 'viewer' })
+    imageName: !empty(replayViewerContainerAppImageName) ? replayViewerContainerAppImageName : defaultImageName
     managedEnvironmentResourceId: sharedContainerAppsEnv.id
-    containerName: clientContainerAppName
+    containerName: replayViewerContainerAppName
     registryUsername: sharedAcr.name
     registryPassword: sharedAcr.listCredentials().passwords[0].value
     storageConnectionString: storageConnectionString

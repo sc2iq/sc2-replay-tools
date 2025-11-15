@@ -17,16 +17,9 @@ services:
     replay-processor:
         project: replay-processor
         host: containerapp
-        language: python
+        language: docker
         docker:
             path: Dockerfile
-        hooks:
-            prerestore:
-                shell: sh
-                run: poetry export -f requirements.txt --output requirements.txt --without-hashes
-            postrestore:
-                shell: sh
-                run: rm -f requirements.txt
 
 resources:
     viewer:

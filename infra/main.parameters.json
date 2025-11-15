@@ -26,9 +26,6 @@
     "storageConnectionString": {
       "value": "${STORAGE_CONNECTION_STRING}"
     },
-    "storageQueueName": {
-      "value": "${STORAGE_QUEUE_NAME}"
-    },
     "storageContainerNameUnprocessed": {
       "value": "${STORAGE_CONTAINER_NAME_UNPROCESSED}"
     },
