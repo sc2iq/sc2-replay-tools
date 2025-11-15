@@ -1,20 +1,6 @@
 #! /bin/bash
 
-set -ex
-
-echo "Print OS and Tool Versions"
-
-# OS
-lsb_release -a
-
-# Tools
-git --version
-docker --version
-az version
-azd version
-jq --version
-npm --version
-node --version
+set -e
 
 echo "INSTALLING PROJECT DEPENDENCIES"
 

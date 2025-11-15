@@ -9,6 +9,14 @@
   ],
   "settings": {
     "powershell.cwd": "/workspace/dummyOne/sc2replay-tools",
-    "dotenv.enableAutocloaking": false
+    "dotenv.enableAutocloaking": false,
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/.hg/store/**": true,
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+    }
   }
 }
