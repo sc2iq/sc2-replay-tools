@@ -6,25 +6,25 @@ param uniqueRgString string
 @maxLength(24)
 param name string = '${resourceGroup().name}${uniqueRgString}storage'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' existing = {
   name: name
 }
 
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' existing = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2025-01-01' existing = {
   parent: storageAccount
   name: 'default'
 }
 
 param replaysContainerNameUnprocessed string = 'replays-unprocessed'
 
-resource replaysContainerUnprocessed 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
+resource replaysContainerUnprocessed 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01' = {
   parent: blobService
   name: replaysContainerNameUnprocessed
 }
 
 param replaysContainerNameProcessed string = 'replays-processed'
 
-resource replaysContainerProcessed 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
+resource replaysContainerProcessed 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01' = {
   parent: blobService
   name: replaysContainerNameProcessed
   properties: {

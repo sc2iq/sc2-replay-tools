@@ -1,10 +1,12 @@
 param name string = '${resourceGroup().name}-replay-processor'
 param location string = resourceGroup().location
+param tags object = {}
 
 param managedEnvironmentResourceId string
+
 param imageName string
 param containerName string
-param registryUrl string
+
 param registryUsername string
 @secure()
 param registryPassword string
@@ -27,7 +29,7 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
       activeRevisionsMode: 'Single'
       registries: [
         {
-          server: registryUrl
+          server: '${registryUsername}.azurecr.io'
           username: registryUsername
           passwordSecretRef: registryPassworldSecretName
         }
@@ -102,3 +104,6 @@ resource containerApp 'Microsoft.App/containerapps@2022-03-01' = {
     }
   }
 }
+
+output name string = containerApp.name
+output appUrl string = 'https://${containerApp.properties.configuration.ingress.fqdn}'
